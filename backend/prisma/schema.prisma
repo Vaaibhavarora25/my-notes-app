@@ -10,6 +10,7 @@ model User {
   email String @unique
   password String
   notes Note[]
+  isAdmin Boolean?
 }
 model Note {
   id String @id @default(uuid())
