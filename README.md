@@ -84,3 +84,32 @@ To stop and **remove volumes** (resets the database):
 ```bash
 docker compose down -v
 ```
+
+---
+
+## Local Backend Setup (No Docker)
+
+If you want to run backend services against your local PostgreSQL directly:
+
+1. Ensure your root `.env` `DATABASE_URL` points to your local database.
+2. Apply database schema to your local PostgreSQL:
+   ```bash
+   cd backend
+   npm install
+   npm run db:setup:local
+   ```
+3. Start services in separate terminals:
+   ```bash
+   npm run start:dev:users
+   npm run start:dev:notes
+   npm run start:dev
+   ```
+
+`db:setup:local` pushes schema for both:
+- `backend/apps/user-service/prisma/schema.prisma`
+- `backend/apps/notes-service/prisma/schema.prisma`
+
+If you also want to regenerate both Prisma clients, use:
+```bash
+npm run db:setup:local:fresh
+```

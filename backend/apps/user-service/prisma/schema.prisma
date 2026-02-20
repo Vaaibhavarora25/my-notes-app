@@ -12,5 +12,14 @@ model User {
   id       String @id @default(uuid())
   email    String @unique
   password String
-  isAdmin Boolean?
+  isAdmin  Boolean?
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
 }

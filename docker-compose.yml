@@ -2,43 +2,43 @@ services:
   # ─────────────────────────────────────────────────
   # Database
   # ─────────────────────────────────────────────────
-  postgres:
-    image: postgres:16-alpine
-    container_name: notes-app-db
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
-      POSTGRES_DB: ${POSTGRES_DB:-notes_db}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - notes-network
+  #   postgres:
+  #     image: postgres:16-alpine
+  #     container_name: notes-app-db
+  #     restart: always
+  #     environment:
+  #       POSTGRES_USER: ${POSTGRES_USER:-postgres}
+  #       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+  #       POSTGRES_DB: ${POSTGRES_DB:-notes_db}
+  #     ports:
+  #       - "${POSTGRES_PORT:-5432}:5432"
+  #     volumes:
+  #       - postgres_data:/var/lib/postgresql/data
+  #     healthcheck:
+  #       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+  #       interval: 5s
+  #       timeout: 5s
+  #       retries: 5
+  #     networks:
+  #       - notes-network
 
   # ─────────────────────────────────────────────────
   # Migration Runner (Runs once, then exits)
   # ─────────────────────────────────────────────────
-  migrate:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: notes-app-migrate
-    command: npx prisma migrate deploy
-
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - notes-network
+  #   migrate:
+  #     build:
+  #       context: ./backend
+  #       dockerfile: Dockerfile
+  #     container_name: notes-app-migrate
+  #     command: npx prisma migrate deploy
+  #
+  #     environment:
+  #       DATABASE_URL: ${DATABASE_URL}
+  #     depends_on:
+  #       postgres:
+  #         condition: service_healthy
+  #     networks:
+  #       - notes-network
 
   # ─────────────────────────────────────────────────
   # Microservices
@@ -55,9 +55,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-changeme_in_prod_secret_key}
       NOTES_SERVICE_HOST: notes-service
       NOTES_SERVICE_PORT: 3002
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
+    #     depends_on:
+    #       migrate:
+    #         condition: service_completed_successfully
     networks:
       - notes-network
 
@@ -70,9 +70,9 @@ services:
     restart: always
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
+    #     depends_on:
+    #       migrate:
+    #         condition: service_completed_successfully
     networks:
       - notes-network
 
@@ -116,8 +116,8 @@ services:
     networks:
       - notes-network
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:
 
 
 networks:
