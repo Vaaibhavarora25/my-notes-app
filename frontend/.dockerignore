@@ -1,6 +1,13 @@
 node_modules
 .next
-out
-build
-.env
+.git
+.gitignore
 *.log
+Dockerfile
+README.md
+cypress
+.env
+.env.local
+.env.development
+.env.test
+.env.production

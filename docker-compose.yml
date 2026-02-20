@@ -7,18 +7,37 @@ services:
     container_name: notes-app-db
     restart: always
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
-      POSTGRES_DB: notes_db
+      POSTGRES_DB: ${POSTGRES_DB:-notes_db}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - notes-network
+
+  # ─────────────────────────────────────────────────
+  # Migration Runner (Runs once, then exits)
+  # ─────────────────────────────────────────────────
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notes-app-migrate
+    command: npx prisma db push --skip-generate
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - notes-network
 
   # ─────────────────────────────────────────────────
   # Microservices
@@ -31,11 +50,15 @@ services:
     command: node dist/apps/user-service/main
     restart: always
     environment:
-      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
-      JWT_SECRET: ${JWT_SECRET:-secret123}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:-changeme_in_prod_secret_key}
+      NOTES_SERVICE_HOST: notes-service
+      NOTES_SERVICE_PORT: 3002
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - notes-network
 
   notes-service:
     build:
@@ -45,10 +68,12 @@ services:
     command: node dist/apps/notes-service/main
     restart: always
     environment:
-      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
+      DATABASE_URL: ${DATABASE_URL}
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - notes-network
 
   # ─────────────────────────────────────────────────
   # API Gateway
@@ -63,13 +88,15 @@ services:
     ports:
       - "3001:3001"
     environment:
-      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
-      JWT_SECRET: ${JWT_SECRET:-secret123}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:-changeme_in_prod_secret_key}
       USER_SERVICE_HOST: user-service
       NOTES_SERVICE_HOST: notes-service
     depends_on:
       - user-service
       - notes-service
+    networks:
+      - notes-network
 
   # ─────────────────────────────────────────────────
   # Frontend
@@ -83,9 +110,15 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: "http://localhost:3001"
-    depends_on:
-      - api-gateway
+      # Since this is a client-side app, this URL must be reachable from the user's browser, NOT internal docker network
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+    networks:
+      - notes-network
 
 volumes:
   postgres_data:
+
+
+networks:
+  notes-network:
+    driver: bridge

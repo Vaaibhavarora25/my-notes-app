@@ -20,8 +20,8 @@ export class AuthService {
     const hash = await bcrypt.hash(password, 10);
     const user = await this.usersService.create({ email, password: hash });
 
-
-    await firstValueFrom(
+    // Fire-and-forget welcome note — don't let notes-service failures block signup
+    firstValueFrom(
       this.notesClient.send(
         { cmd: 'create' },
         {
@@ -32,7 +32,9 @@ export class AuthService {
           user: { id: user.id },
         },
       ),
-    );
+    ).catch(() => {
+      // Ignore errors — welcome note is a nice-to-have
+    });
 
     return this.createToken(user.id);
   }
