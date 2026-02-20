@@ -3,3 +3,9 @@ dist
 .env
 prisma/migrations
 *.log
+.git
+.gitignore
+README.md
+test
+coverage
+junit.xml
