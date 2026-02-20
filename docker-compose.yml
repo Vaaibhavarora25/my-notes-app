@@ -1,0 +1,91 @@
+services:
+  # ─────────────────────────────────────────────────
+  # Database
+  # ─────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: notes-app-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: notes_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────
+  # Microservices
+  # ─────────────────────────────────────────────────
+  user-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notes-app-user-service
+    command: node dist/apps/user-service/main
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
+      JWT_SECRET: ${JWT_SECRET:-secret123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notes-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notes-app-notes-service
+    command: node dist/apps/notes-service/main
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ─────────────────────────────────────────────────
+  # API Gateway
+  # ─────────────────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notes-app-api-gateway
+    command: node dist/apps/api-gateway/main
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-password123}@postgres:5432/notes_db?schema=public"
+      JWT_SECRET: ${JWT_SECRET:-secret123}
+      USER_SERVICE_HOST: user-service
+      NOTES_SERVICE_HOST: notes-service
+    depends_on:
+      - user-service
+      - notes-service
+
+  # ─────────────────────────────────────────────────
+  # Frontend
+  # ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: notes-app-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:3001"
+    depends_on:
+      - api-gateway
+
+volumes:
+  postgres_data:
