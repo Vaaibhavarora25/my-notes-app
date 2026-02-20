@@ -9,17 +9,17 @@ import { UsersModule } from '../users/users.module';
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: 'secret123',
+      secret: process.env.JWT_SECRET || 'secret123',
       signOptions: { expiresIn: '7d' },
     }),
 
     ClientsModule.register([
       {
-        name: 'NOTES_SERVICE',
+        name: 'QUEUE_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: process.env.NOTES_SERVICE_HOST || '127.0.0.1',
-          port: 3002,
+          host: process.env.QUEUE_SERVICE_HOST || '127.0.0.1',
+          port: Number(process.env.QUEUE_SERVICE_PORT || 3004),
         },
       },
     ]),

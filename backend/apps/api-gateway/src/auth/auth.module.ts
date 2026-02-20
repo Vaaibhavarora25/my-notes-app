@@ -7,11 +7,11 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     ClientsModule.register([
       {
-        name: 'USER_SERVICE',
+        name: 'QUEUE_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: process.env.USER_SERVICE_HOST || '127.0.0.1',
-          port: 3003,
+          host: process.env.QUEUE_SERVICE_HOST || '127.0.0.1',
+          port: Number(process.env.QUEUE_SERVICE_PORT || 3004),
         },
       },
     ]),

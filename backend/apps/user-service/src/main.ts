@@ -9,7 +9,7 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '0.0.0.0',
-        port: 3003,
+        port: Number(process.env.USER_SERVICE_PORT || 3003),
       },
     },
   );

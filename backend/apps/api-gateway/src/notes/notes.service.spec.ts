@@ -9,7 +9,7 @@ describe('NotesService', () => {
       providers: [
         NotesService,
         {
-          provide: 'NOTES_SERVICE',
+          provide: 'QUEUE_SERVICE',
           useValue: {
             send: jest.fn(),
             emit: jest.fn(),

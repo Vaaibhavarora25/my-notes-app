@@ -12,6 +12,7 @@
     "start:dev": "nest start api-gateway --watch",
     "start:dev:notes": "nest start notes-service --watch",
     "start:dev:users": "nest start user-service --watch",
+    "start:dev:queue": "nest start queue-service --watch",
     "prisma:generate:user": "prisma generate --schema=apps/user-service/prisma/schema.prisma",
     "prisma:generate:notes": "prisma generate --schema=apps/notes-service/prisma/schema.prisma",
     "prisma:generate:all": "npm run prisma:generate:user && npm run prisma:generate:notes",
@@ -37,6 +38,7 @@
     "@nestjs/microservices": "^11.1.14",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^5.22.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
@@ -44,7 +46,8 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

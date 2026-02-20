@@ -102,8 +102,12 @@ If you want to run backend services against your local PostgreSQL directly:
    ```bash
    npm run start:dev:users
    npm run start:dev:notes
+   npm run start:dev:queue
    npm run start:dev
    ```
+
+Swagger docs:
+- `http://localhost:3001/docs`
 
 `db:setup:local` pushes schema for both:
 - `backend/apps/user-service/prisma/schema.prisma`
@@ -113,3 +117,17 @@ If you also want to regenerate both Prisma clients, use:
 ```bash
 npm run db:setup:local:fresh
 ```
+
+### Run Everything with One Command
+
+Use the root script:
+
+```bash
+bash run-all.sh
+```
+
+This script:
+- generates Prisma clients
+- syncs your local DB schema
+- starts `user-service`, `notes-service`, `queue-service`, `api-gateway`, and frontend
+- writes logs to `.logs/`

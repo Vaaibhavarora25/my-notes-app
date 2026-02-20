@@ -16,11 +16,11 @@ describe('AuthService (user-service)', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
   let jwtService: { sign: jest.Mock };
-  let notesClient: { send: jest.Mock };
+  let queueClient: { emit: jest.Mock };
 
   beforeEach(async () => {
     jwtService = { sign: jest.fn().mockReturnValue('mock-jwt-token') };
-    notesClient = { send: jest.fn().mockReturnValue(of({})) };
+    queueClient = { emit: jest.fn().mockReturnValue(of({})) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -33,7 +33,7 @@ describe('AuthService (user-service)', () => {
           },
         },
         { provide: JwtService, useValue: jwtService },
-        { provide: 'NOTES_SERVICE', useValue: notesClient },
+        { provide: 'QUEUE_SERVICE', useValue: queueClient },
       ],
     }).compile();
 
@@ -56,35 +56,31 @@ describe('AuthService (user-service)', () => {
       expect(usersService.create).toHaveBeenCalledWith(
         expect.objectContaining({ email: 'test@example.com' }),
       );
-      // Password should have been hashed — not stored in plain text
+
       const callArg = usersService.create.mock.calls[0][0];
       expect(callArg.password).not.toBe('plain_pw');
       expect(await bcrypt.compare('plain_pw', callArg.password)).toBe(true);
-
       expect(result).toEqual({ access_token: 'mock-jwt-token' });
     });
 
     it('throws if the user already exists', async () => {
       usersService.findByEmail.mockResolvedValue(mockUser);
+
       await expect(service.signup('test@example.com', 'pw')).rejects.toThrow(
         'User exists',
       );
       expect(usersService.create).not.toHaveBeenCalled();
     });
 
-    it('sends a welcome note to notes-service after signup', async () => {
+    it('emits a welcome-note event after signup', async () => {
       usersService.findByEmail.mockResolvedValue(null);
       usersService.create.mockResolvedValue(mockUser);
 
       await service.signup('test@example.com', 'pw');
 
-      expect(notesClient.send).toHaveBeenCalledWith(
-        { cmd: 'create' },
-        expect.objectContaining({
-          dto: expect.objectContaining({ title: 'Welcome! 👋' }),
-          user: { id: mockUser.id },
-        }),
-      );
+      expect(queueClient.emit).toHaveBeenCalledWith('notes.welcome.create', {
+        userId: mockUser.id,
+      });
     });
   });
 
@@ -110,6 +106,7 @@ describe('AuthService (user-service)', () => {
 
     it('throws UnauthorizedException for unknown email', async () => {
       usersService.findByEmail.mockResolvedValue(null);
+
       await expect(service.login('unknown@example.com', 'pw')).rejects.toThrow(
         UnauthorizedException,
       );
@@ -124,4 +121,3 @@ describe('AuthService (user-service)', () => {
     });
   });
 });
-
