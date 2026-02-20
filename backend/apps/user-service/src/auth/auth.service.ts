@@ -1,13 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @Inject('NOTES_SERVICE') private notesClient: ClientProxy,
   ) { }
 
   async signup(email: string, password: string) {
@@ -16,6 +19,20 @@ export class AuthService {
 
     const hash = await bcrypt.hash(password, 10);
     const user = await this.usersService.create({ email, password: hash });
+
+
+    await firstValueFrom(
+      this.notesClient.send(
+        { cmd: 'create' },
+        {
+          dto: {
+            title: 'Welcome! 👋',
+            content: `Hi, I am called through the message queuing service. My user ID is ${user.id}`,
+          },
+          user: { id: user.id },
+        },
+      ),
+    );
 
     return this.createToken(user.id);
   }
