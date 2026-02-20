@@ -3,12 +3,10 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-<<<<<<< HEAD
 # Install dependencies required for Prisma
 RUN apk add --no-cache openssl libc6-compat
 
-=======
->>>>>>> d0079d9b635b903b9208d049148ed584ab3fb2c6
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install
@@ -29,12 +27,10 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-<<<<<<< HEAD
 # Install dependencies required for Prisma
 RUN apk add --no-cache openssl libc6-compat
 
-=======
->>>>>>> d0079d9b635b903b9208d049148ed584ab3fb2c6
+
 # Copy necessary files from build stage
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules

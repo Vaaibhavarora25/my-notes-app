@@ -30,11 +30,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: notes-app-migrate
-<<<<<<< HEAD
-    command: npx prisma db push --skip-generate
-=======
     command: npx prisma migrate deploy
->>>>>>> d0079d9b635b903b9208d049148ed584ab3fb2c6
+
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:

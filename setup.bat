@@ -29,8 +29,6 @@ echo 🌍 Frontend:   http://localhost:3000
 echo 🔌 API Gateway: http://localhost:3001
 echo -------------------------------------------
 echo Use 'docker compose logs -f' to view logs.
-<<<<<<< HEAD
 pause
-=======
->>>>>>> d0079d9b635b903b9208d049148ed584ab3fb2c6
+
 endlocal
