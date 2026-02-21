@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotesController } from './notes.controller';
-import { NotesService } from './notes.service';
+import { NotesHttpController } from './notes-http.controller';
+import { NotesClientService } from './notes-client.service';
 
-describe('NotesController', () => {
-  let controller: NotesController;
+describe('NotesHttpController', () => {
+  let controller: NotesHttpController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [NotesController],
+      controllers: [NotesHttpController],
       providers: [
         {
-          provide: NotesService,
+          provide: NotesClientService,
           useValue: {
             create: jest.fn(),
             findAll: jest.fn(),
@@ -22,7 +22,7 @@ describe('NotesController', () => {
       ],
     }).compile();
 
-    controller = module.get<NotesController>(NotesController);
+    controller = module.get<NotesHttpController>(NotesHttpController);
   });
 
   it('should be defined', () => {

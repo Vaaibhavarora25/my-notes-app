@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotesService } from './notes.service';
+import { NotesDomainService } from './notes.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
 
-describe('NotesService', () => {
-  let service: NotesService;
+describe('NotesDomainService', () => {
+  let service: NotesDomainService;
   let prisma: any;
 
   beforeEach(async () => {
@@ -20,7 +20,7 @@ describe('NotesService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        NotesService,
+        NotesDomainService,
         {
           provide: PrismaService,
           useValue: prisma,
@@ -28,7 +28,7 @@ describe('NotesService', () => {
       ],
     }).compile();
 
-    service = module.get<NotesService>(NotesService);
+    service = module.get<NotesDomainService>(NotesDomainService);
   });
 
   it('should be defined', () => {

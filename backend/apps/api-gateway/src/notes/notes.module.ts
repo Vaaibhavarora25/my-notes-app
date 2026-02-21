@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { NotesService } from './notes.service';
-import { NotesController } from './notes.controller';
+import { NotesClientService } from './notes-client.service';
+import { NotesHttpController } from './notes-http.controller';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'QUEUE_SERVICE',
+        name: 'NOTES_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: process.env.QUEUE_SERVICE_HOST || '127.0.0.1',
-          port: Number(process.env.QUEUE_SERVICE_PORT || 3004),
+          host: process.env.NOTES_SERVICE_HOST || '127.0.0.1',
+          port: Number(process.env.NOTES_SERVICE_PORT || 3002),
         },
       },
     ]),
   ],
-  controllers: [NotesController],
-  providers: [NotesService],
+  controllers: [NotesHttpController],
+  providers: [NotesClientService],
 })
-export class NotesModule { }
+export class NotesGatewayModule { }

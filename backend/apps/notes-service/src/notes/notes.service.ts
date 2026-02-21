@@ -4,7 +4,7 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Injectable()
-export class NotesService {
+export class NotesDomainService {
   constructor(private prisma: PrismaService) { }
 
   async findAll(user: any): Promise<any[]> {

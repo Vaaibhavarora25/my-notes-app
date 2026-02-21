@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotesService } from './notes.service';
+import { NotesClientService } from './notes-client.service';
 
-describe('NotesService', () => {
-  let service: NotesService;
+describe('NotesClientService', () => {
+  let service: NotesClientService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        NotesService,
+        NotesClientService,
         {
-          provide: 'QUEUE_SERVICE',
+          provide: 'NOTES_SERVICE',
           useValue: {
             send: jest.fn(),
             emit: jest.fn(),
@@ -18,7 +18,7 @@ describe('NotesService', () => {
       ],
     }).compile();
 
-    service = module.get<NotesService>(NotesService);
+    service = module.get<NotesClientService>(NotesClientService);
   });
 
   it('should be defined', () => {

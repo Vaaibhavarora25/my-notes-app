@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { NotesModule } from './notes/notes.module';
+import { NotesDomainModule } from './notes/notes.module';
 
 @Module({
-  imports: [NotesModule],
+  imports: [NotesDomainModule],
   controllers: [],
   providers: [],
 })

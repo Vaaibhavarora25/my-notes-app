@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -67,7 +67,7 @@ describe('AuthService (user-service)', () => {
       usersService.findByEmail.mockResolvedValue(mockUser);
 
       await expect(service.signup('test@example.com', 'pw')).rejects.toThrow(
-        'User exists',
+        RpcException,
       );
       expect(usersService.create).not.toHaveBeenCalled();
     });
@@ -95,20 +95,20 @@ describe('AuthService (user-service)', () => {
       expect(jwtService.sign).toHaveBeenCalledWith({ sub: mockUser.id });
     });
 
-    it('throws UnauthorizedException for wrong password', async () => {
+    it('throws RpcException for wrong password', async () => {
       const hashed = await bcrypt.hash('correct_pw', 10);
       usersService.findByEmail.mockResolvedValue({ ...mockUser, password: hashed });
 
       await expect(service.login('test@example.com', 'wrong_pw')).rejects.toThrow(
-        UnauthorizedException,
+        RpcException,
       );
     });
 
-    it('throws UnauthorizedException for unknown email', async () => {
+    it('throws RpcException for unknown email', async () => {
       usersService.findByEmail.mockResolvedValue(null);
 
       await expect(service.login('unknown@example.com', 'pw')).rejects.toThrow(
-        UnauthorizedException,
+        RpcException,
       );
     });
   });

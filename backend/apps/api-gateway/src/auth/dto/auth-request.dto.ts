@@ -3,11 +3,11 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class AuthRequestDto {
   @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
+  @IsEmail({}, { message: 'Please enter a valid email address' })
   email: string;
 
   @ApiProperty({ example: 'strong-password-123' })
   @IsString()
-  @MinLength(6)
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 }

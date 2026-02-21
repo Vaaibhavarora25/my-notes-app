@@ -1,5 +1,15 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("token");
@@ -18,14 +28,29 @@ async function request(path: string, options: RequestInit = {}) {
   });
 
   if (!res.ok) {
-    if (res.status === 401) {
+    let message = "Request failed";
+    const isJson = (res.headers.get("content-type") || "").includes(
+      "application/json",
+    );
+
+    if (isJson) {
+      const body = await res.json();
+      if (Array.isArray(body?.message) && body.message.length > 0) {
+        message = String(body.message[0]);
+      } else if (typeof body?.message === "string" && body.message.length > 0) {
+        message = body.message;
+      }
+    }
+
+    const isAuthRequest = path.startsWith("/auth/");
+    if (res.status === 401 && !isAuthRequest) {
       localStorage.removeItem("token");
       if (typeof window !== "undefined") {
         window.location.reload(); // Simple way to reset state
       }
-      throw new Error("Unauthorized");
     }
-    throw new Error("API error");
+
+    throw new ApiError(message, res.status);
   }
 
   return res.json();

@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { NotesService } from './notes.service';
+import { NotesDomainService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Controller()
-export class NotesController {
-  constructor(private readonly notesService: NotesService) { }
+export class NotesRpcController {
+  constructor(private readonly notesService: NotesDomainService) { }
 
   @MessagePattern({ cmd: 'findOne' })
   findOne(@Payload() payload: { id: string, user: any }) {

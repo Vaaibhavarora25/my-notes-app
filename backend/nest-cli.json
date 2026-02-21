@@ -19,15 +19,6 @@
         "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
       }
     },
-    "database": {
-      "type": "library",
-      "root": "libs/database",
-      "entryFile": "index",
-      "sourceRoot": "libs/database/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/database/tsconfig.lib.json"
-      }
-    },
     "notes-service": {
       "type": "application",
       "root": "apps/notes-service",

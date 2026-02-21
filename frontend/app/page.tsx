@@ -59,8 +59,12 @@ export default function HomePage() {
 
       setIsLoggedIn(true);
       loadNotes();
-    } catch {
-      setAuthError("Authentication failed");
+    } catch (error) {
+      if (error instanceof Error) {
+        setAuthError(error.message);
+      } else {
+        setAuthError("Authentication failed");
+      }
     }
   }
 

@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthRpcController } from './auth-rpc.controller';
 import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret123',
+      secret: process.env.JWT_SECRET || 'changeme_in_prod_secret_key',
       signOptions: { expiresIn: '7d' },
     }),
 
@@ -24,7 +24,7 @@ import { UsersModule } from '../users/users.module';
       },
     ]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthRpcController],
   providers: [AuthService],
 })
-export class AuthModule { }
+export class UserAuthModule { }

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { NotesController } from './notes.controller';
+import { NotesDomainService } from './notes.service';
+import { NotesRpcController } from './notes-rpc.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  controllers: [NotesController],
-  providers: [NotesService],
+  controllers: [NotesRpcController],
+  providers: [NotesDomainService],
   imports: [PrismaModule],
 })
-export class NotesModule { }
+export class NotesDomainModule { }

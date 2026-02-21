@@ -1,5 +1,8 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import {
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -14,7 +17,12 @@ export class AuthService {
 
   async signup(email: string, password: string) {
     const existing = await this.usersService.findByEmail(email);
-    if (existing) throw new Error('User exists');
+    if (existing) {
+      throw new RpcException({
+        statusCode: 409,
+        message: 'User already exists',
+      });
+    }
 
     const hash = await bcrypt.hash(password, 10);
     const user = await this.usersService.create({ email, password: hash });
@@ -28,10 +36,20 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
-    if (!user) throw new UnauthorizedException();
+    if (!user) {
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Invalid credentials',
+      });
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new UnauthorizedException();
+    if (!match) {
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Invalid credentials',
+      });
+    }
 
     return this.createToken(user.id);
   }

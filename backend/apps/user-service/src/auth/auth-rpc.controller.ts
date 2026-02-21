@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 
 @Controller()
-export class AuthController {
+export class AuthRpcController {
   constructor(private authService: AuthService) { }
 
   @MessagePattern({ cmd: 'signup' })

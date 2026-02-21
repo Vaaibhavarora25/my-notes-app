@@ -20,14 +20,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@app/database": [
-        "libs/database/src"
-      ],
-      "@app/database/*": [
-        "libs/database/src/*"
-      ]
-    }
+    "noFallthroughCasesInSwitch": false
   }
 }

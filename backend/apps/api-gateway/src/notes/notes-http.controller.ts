@@ -9,7 +9,7 @@ import {
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
-import { NotesService } from './notes.service';
+import { NotesClientService } from './notes-client.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -26,8 +26,8 @@ import { NoteResponseDto } from './dto/note-response.dto';
 @ApiBearerAuth()
 @Controller('notes')
 @UseGuards(AuthGuard('jwt'))
-export class NotesController {
-  constructor(private readonly notesService: NotesService) {}
+export class NotesHttpController {
+  constructor(private readonly notesService: NotesClientService) {}
 
   @ApiOperation({ summary: 'Get a single note by id' })
   @ApiResponse({ status: 200, type: NoteResponseDto })

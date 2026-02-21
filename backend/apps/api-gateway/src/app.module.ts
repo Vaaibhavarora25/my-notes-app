@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { NotesModule } from './notes/notes.module';
-import { AuthModule } from './auth/auth.module';
+import { NotesGatewayModule } from './notes/notes.module';
+import { AuthGatewayModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    NotesModule,
-    AuthModule,
+    NotesGatewayModule,
+    AuthGatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],

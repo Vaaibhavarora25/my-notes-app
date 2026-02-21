@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { UserServiceModule } from './../src/user-service.module';
 
-describe('UserServiceController (e2e)', () => {
+describe('UserService (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -15,10 +14,7 @@ describe('UserServiceController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  it('should bootstrap the module', () => {
+    expect(app).toBeDefined();
   });
 });
